@@ -1,0 +1,13 @@
+{
+    "name": "devm/study",
+    "description": "study",
+    "autoload": {
+        "psr-0": {"DevMStudy\\Tdd": "src/"}
+    },
+    "require": {
+
+    },
+    "require-dev": {
+        "codeception/codeception": "1.6.*"
+    }
+}
