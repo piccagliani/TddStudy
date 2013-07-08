@@ -1,5 +1,5 @@
 <?php
-require_once "vendor/autoload.php";
+require_once __DIR__ . "/../vendor/autoload.php";
 
 $generator = new DevMStudy\Tdd\FizzBuzz();
 $fizzBuzz = $generator->generate(1, 100);

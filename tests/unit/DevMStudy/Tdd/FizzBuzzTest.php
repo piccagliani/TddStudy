@@ -18,7 +18,7 @@ class FizzBuzzTest extends \Codeception\TestCase\Test
     }
 
     // tests
-    public function testFizzBuzzSucceed()
+    public function testGenerateFizzBuzzSucceed()
     {
         $I = $this->codeGuy;
         $target = new FizzBuzz();
