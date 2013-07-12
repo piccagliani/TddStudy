@@ -25,6 +25,16 @@ class Basic extends Command
         $ab = $input->getArgument("AB");
         $h = $input->getArgument("H");
 
+        if (!preg_match('/^[0-9]+$/', $pa)) {
+            throw new \Exception('"PA" must be integer.');
+        }
+        if (!preg_match('/^[0-9]+$/', $ab)) {
+            throw new \Exception('"AB" must be integer.');
+        }
+        if (!preg_match('/^[0-9]+$/', $h)) {
+            throw new \Exception('"H" must be integer.');
+        }
+
         $player = new Player();
         $player->setPlateAppearances($pa);
         $player->setAtBats($ab);
