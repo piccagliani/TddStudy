@@ -29,19 +29,19 @@ class BattingAverageCalculatorTest extends \Codeception\TestCase\Test
         $I = $this->codeGuy;
         $player = new Player();
 
-        $I->expect("[打席数：749, 打数：686, 安打数：213] の場合打率は 0.310");
+        $I->expect("[打席数：749, 打数：686, 安打数：213] の場合打率は 「.310」");
         $player->setPlateAppearances(749);
         $player->setAtBats(686);
         $player->setHits(213);
-        $this->assertEquals(0.310, $this->calcurator->calculateBattingAverage($player));
+        $this->assertEquals(".310", $this->calcurator->calculateBattingAverage($player));
 
         $I->expect("打席数が0の場合は、打率を計算しない");
         $player->setPlateAppearances(0);
-        $this->assertNull($this->calcurator->calculateBattingAverage($player));
+        $this->assertEquals("----", $this->calcurator->calculateBattingAverage($player));
 
-        $I->expect("打席数が0でなく、打数が0の場合は「0.000」と計算する");
+        $I->expect("打席数が0でなく、打数が0の場合は「.000」と計算する");
         $player->setPlateAppearances(749);
         $player->setAtBats(0);
-        $this->assertEquals(0.000, $this->calcurator->calculateBattingAverage($player));
+        $this->assertEquals(".000", $this->calcurator->calculateBattingAverage($player));
     }
 }

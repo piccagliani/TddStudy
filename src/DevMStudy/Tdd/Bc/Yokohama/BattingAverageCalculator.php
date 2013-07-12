@@ -12,15 +12,15 @@ class BattingAverageCalculator
     {
         // 打席数が0の場合は、打率を計算しない
         if ($player->getPlateAppearances() === 0) {
-            return null;
+            return '----';
         }
 
         // 打席数が0でなく、打数が0の場合は「0.000」と計算する
         if ($player->getAtBats() === 0) {
-            return 0.000;
+            return ".000";
         }
 
         $average = round($player->getHits() / $player->getAtBats(), 3);
-        return $average;
+        return substr(sprintf("%.3F", $average), 1);
     }
 }
