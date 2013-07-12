@@ -1,5 +1,5 @@
 <?php
-namespace DevMStudy\Tdd\Bc\Yokohama;
+namespace DevMStudy\Tdd\Bc\Yokohama\Entity;
 
 /**
  * Class Player

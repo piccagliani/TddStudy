@@ -1,12 +1,14 @@
 <?php
-namespace DevMStudy\Tdd\Bc\Yokohama;
+namespace DevMStudy\Tdd\Bc\Yokohama\Service;
+
+use DevMStudy\Tdd\Bc\Yokohama\Entity\Player;
 
 /**
  * Class BattingAverageCalcurator
  * @package DevMStudy\Tdd\Bc\Yokohama
  * @see http://devtesting.jp/tddbc/?TDDBC%E6%A8%AA%E6%B5%9C%2F%E8%AA%B2%E9%A1%8C
  */
-class BattingAverageCalculator
+class BattingAverageService
 {
     public function calculateBattingAverage(Player $player)
     {
