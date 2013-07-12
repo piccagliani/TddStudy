@@ -17,5 +17,5 @@ $player->setHits($argv[3]);
 $calculator = new \DevMStudy\Tdd\Bc\Yokohama\BattingAverageCalculator();
 $average = $calculator->calculateBattingAverage($player);
 
-echo "Average: " . sprintf("%.3F", $average) . "\n";
+echo "Average: " . $average . "\n";
 
