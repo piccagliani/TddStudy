@@ -1,8 +1,8 @@
 <?php
-namespace DevMStudy\Tdd;
+namespace DevMStudy\Tdd\FizzBuzz;
 use Codeception\Util\Stub;
 
-class FizzBuzzTest extends \Codeception\TestCase\Test
+class FizzBuzzGeneratorTest extends \Codeception\TestCase\Test
 {
    /**
     * @var \CodeGuy
@@ -21,7 +21,7 @@ class FizzBuzzTest extends \Codeception\TestCase\Test
     public function testGenerateFizzBuzzSucceed()
     {
         $I = $this->codeGuy;
-        $target = new FizzBuzz();
+        $target = new FizzBuzzGenerator();
         $fizzBuzz = $target->generate(1, 30);
 
         $I->expect("count(\$fizzBuzz) is 30");
