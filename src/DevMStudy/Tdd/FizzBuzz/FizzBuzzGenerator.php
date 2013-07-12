@@ -1,8 +1,7 @@
 <?php
-namespace DevMStudy\Tdd;
+namespace DevMStudy\Tdd\FizzBuzz;
 
-
-class FizzBuzz
+class FizzBuzzGenerator
 {
     public function generate($start, $end)
     {
