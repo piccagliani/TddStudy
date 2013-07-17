@@ -22,11 +22,23 @@ class VendingMachineTest extends \Codeception\TestCase\Test
         $I = $this->codeGuy;
         $V = new VendingMachine();
 
-        $I->expect("初期状態で、コーラ（値段:120円、名前”コーラ”）を5本格納している。");
-        $stock = $V->getBeverageStock();
-        $this->assertEquals("コーラ", $stock->getName());
-        $this->assertEquals(120, $stock->getPrice());
-        $this->assertEquals(5, $stock->getQuantity());
+        $I->expect("初期状態で、コーラ（値段: 120円、名前: コーラ）を5本格納している。");
+        $stocks = $V->getBeverageStocks();
+        $this->assertEquals("コーラ", $stocks[0]->getName());
+        $this->assertEquals(120, $stocks[0]->getPrice());
+        $this->assertEquals(5, $stocks[0]->getQuantity());
+
+        $I->expect("初期状態で、レッドブル（値段: 200円、名前: レッドブル）を5本格納している。");
+        $stocks = $V->getBeverageStocks();
+        $this->assertEquals("レッドブル", $stocks[1]->getName());
+        $this->assertEquals(200, $stocks[1]->getPrice());
+        $this->assertEquals(5, $stocks[1]->getQuantity());
+
+        $I->expect("初期状態で、水（値段:100円、名前: おいしい水）を5本格納している。");
+        $stocks = $V->getBeverageStocks();
+        $this->assertEquals("おいしい水", $stocks[2]->getName());
+        $this->assertEquals(100, $stocks[2]->getPrice());
+        $this->assertEquals(5, $stocks[2]->getQuantity());
     }
 
     public function testInsertMoney()
@@ -109,7 +121,7 @@ class VendingMachineTest extends \Codeception\TestCase\Test
 
         $I->expect("購入後に払い戻し操作を行うと、投入金額の総計から購入代金を引いた金額を釣り銭として出力する。");
         $V->insertMoney(new Money(1000));
-        $V->purchase();
+        $V->purchase("コーラ");
         $change = $I->getOutputString($payBack);
         $this->assertEquals("釣り: 880円", $change->__toString());
     }
@@ -120,16 +132,20 @@ class VendingMachineTest extends \Codeception\TestCase\Test
         $V = new VendingMachine();
 
         $I->expect("投入金額が不足している場合、購入操作を行っても何もしない");
-        $beverage = $V->purchase();
+        $beverage = $V->purchase("コーラ");
+        $this->assertNull($beverage);
+
+        $I->expect("存在しない商品を指定された場合、購入操作を行っても何もしない");
+        $beverage = $V->purchase("ドクターペッパー");
         $this->assertNull($beverage);
 
         $I->expect("購入操作を行うと、飲み物の在庫を減らし、売り上げ金額を増やす。");
         $V->insertMoney(new Money(1000));
-        $beverage = $V->purchase();
-        $stock = $V->getBeverageStock();
+        $beverage = $V->purchase("コーラ");
+        $stocks = $V->getBeverageStocks();
 
         $this->assertEquals("DevMStudy\\Tdd\\Bc\\Osaka\\Cola", get_class($beverage));
-        $this->assertEquals(4, $stock->getQuantity());
+        $this->assertEquals(4, $stocks[0]->getQuantity());
         $this->assertEquals(120, $V->getSales());
         $this->assertEquals(880, $V->getTotalMoneyAmount());
     }
@@ -141,16 +157,50 @@ class VendingMachineTest extends \Codeception\TestCase\Test
 
         $I->expect("投入金額が不足している場合、飲み物を購入できない。");
         $V->insertMoney(new Money(10));
-        $this->assertFalse($V->canPurchase());
+        $this->assertFalse($V->canPurchase("コーラ"));
 
         $I->expect("投入金額が足りている＆在庫がある場合、飲み物を購入できる。");
         $V->insertMoney(new Money(1000));
-        $this->assertTrue($V->canPurchase());
+        $this->assertTrue($V->canPurchase("コーラ"));
 
-        $I->expect("投入金額が足りている＆在庫がない場合、飲み物を購入できる。");
+        $I->expect("投入金額が足りている＆在庫がない場合、飲み物を購入できない。");
         for ($i = 0; $i < 5; $i++) {
-            $V->purchase();
+            $V->purchase("コーラ");
         }
-        $this->assertFalse($V->canPurchase());
+        $this->assertFalse($V->canPurchase("コーラ"));
+
+        $I->expect("存在しない飲み物は購入できない。");
+        $this->assertFalse($V->canPurchase("ドクターペッパー"));
+    }
+
+    public function testGetPurchasableBeverages()
+    {
+        $I = $this->codeGuy;
+        $V = new VendingMachine();
+
+        $I->expect("投入金額が0円の場合は何も購入できない。");
+        $this->assertCount(0, $V->getPurchasableBeverages());
+
+        $I->expect("投入金額が100円の場合は水だけ購入できる。");
+        $V->insertMoney(new Money(100));
+        $beverages = $V->getPurchasableBeverages();
+        $this->assertCount(1, $beverages);
+        $this->assertEquals("おいしい水", $beverages[0]);
+
+        $I->expect("投入金額が120円の場合は水とコーラだけ購入できる。");
+        $V->insertMoney(new Money(10));
+        $V->insertMoney(new Money(10));
+        $beverages = $V->getPurchasableBeverages();
+        $this->assertCount(2, $beverages);
+        $this->assertEquals("コーラ", $beverages[0]);
+        $this->assertEquals("おいしい水", $beverages[1]);
+
+        $I->expect("投入金額が220円の場合は水とコーラとレッドブルを購入できる。");
+        $V->insertMoney(new Money(100));
+        $beverages = $V->getPurchasableBeverages();
+        $this->assertCount(3, $beverages);
+        $this->assertEquals("コーラ", $beverages[0]);
+        $this->assertEquals("レッドブル", $beverages[1]);
+        $this->assertEquals("おいしい水", $beverages[2]);
     }
 }

@@ -22,7 +22,7 @@ class VendingMachine
     /**
      * @var BeverageLane 飲み物格納レーン
      */
-    private $lane = null;
+    private $lanes = [];
 
     /**
      * @var int 売上金額
@@ -31,10 +31,17 @@ class VendingMachine
 
     public function __construct()
     {
-        $this->lane = new BeverageLane(Cola::$name, Cola::$price);
+        $colaLane = new BeverageLane(Cola::$name, Cola::$price);
+        $redBullLane = new BeverageLane(RedBull::$name, RedBull::$price);
+        $waterLane = new BeverageLane(Water::$name, Water::$price);
         for ($i = 0; $i < 5; $i++) {
-            $this->lane->enqueue(new Cola());
+            $colaLane->enqueue(new Cola());
+            $redBullLane->enqueue(new RedBull());
+            $waterLane->enqueue(new Water());
         }
+        $this->lanes[] = $colaLane;
+        $this->lanes[] = $redBullLane;
+        $this->lanes[] = $waterLane;
     }
 
     /**
@@ -73,46 +80,68 @@ class VendingMachine
 
     /**
      * 飲み物の情報（値段と名前と在庫）を取得します。
-     * @return BeverageStock
+     * @return array
      */
-    public function getBeverageStock()
+    public function getBeverageStocks()
     {
-        return new BeverageStock(
-            $this->lane->getBeverageName(),
-            $this->lane->getBeveragePrice(),
-            count($this->lane)
-        );
+        $stocks = [];
+        foreach ($this->lanes as $lane) {
+            $stocks[] = new BeverageStock(
+                $lane->getBeverageName(),
+                $lane->getBeveragePrice(),
+                count($lane)
+            );
+        }
+        return $stocks;
+    }
+
+    /**
+     * 投入金額、在庫の点で購入可能な飲み物のリストを取得できる。
+     * @return array
+     */
+    public function getPurchasableBeverages()
+    {
+        $purchasable = [];
+        foreach ($this->lanes as $lane) {
+            /** @var BeverageLane $lane */
+            if ($lane->canPurchase($this->totalMoneyAmount)) {
+                $purchasable[] = $lane->getBeverageName();
+            }
+        }
+        return $purchasable;
     }
 
     /**
      * 投入金額、在庫の点で、飲み物が購入できるかどうかを取得します。
+     * @param string $name
      * @return bool
      */
-    public function canPurchase()
+    public function canPurchase($name)
     {
-        if ($this->getTotalMoneyAmount() < $this->lane->getBeveragePrice()) {
+        $lane = $this->getLaneFor($name);
+        if ($lane === null) {
             return false;
         }
-        if (count($this->lane) === 0) {
-            return false;
-        }
-        return true;
+
+        return $lane->canPurchase($this->totalMoneyAmount);
     }
 
     /**
      * 飲み物を購入します。
      * 投入金額が足りない場合もしくは在庫がない場合、購入操作を行っても何もしません。
+     * @param $name
      * @return Beverage
      */
-    public function purchase()
+    public function purchase($name)
     {
-        if ($this->canPurchase() === false) {
-            return NULL;
+        if ($this->canPurchase($name) === false) {
+            return null;
         }
 
-        $this->totalMoneyAmount -= $this->lane->getBeveragePrice();
-        $this->sales += $this->lane->getBeveragePrice();
-        return $this->lane->dequeue();
+        $lane = $this->getLaneFor($name);
+        $this->totalMoneyAmount -= $lane->getBeveragePrice();
+        $this->sales += $lane->getBeveragePrice();
+        return $lane->dequeue();
     }
 
     /**
@@ -130,5 +159,21 @@ class VendingMachine
     private function outputChange($amount)
     {
         echo "釣り: " . $amount . "円";
+    }
+
+    /**
+     * 引数で指定された飲み物を格納しているレーンを取得します。
+     * @param $name
+     * @return \DevMStudy\Tdd\Bc\Osaka\BeverageLane|null
+     */
+    private function getLaneFor($name)
+    {
+        foreach ($this->lanes as $lane) {
+            /** @var BeverageLane $lane */
+            if ($lane->getBeverageName() === $name) {
+                return $lane;
+            }
+        }
+        return null;
     }
 }
