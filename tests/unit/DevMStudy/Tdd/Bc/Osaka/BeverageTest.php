@@ -4,9 +4,9 @@ use Codeception\Util\Stub;
 
 class BeverageTest extends \Codeception\TestCase\Test
 {
-   /**
-    * @var \CodeGuy
-    */
+    /**
+     * @var \CodeGuy
+     */
     protected $codeGuy;
 
     protected function _before()
@@ -18,7 +18,7 @@ class BeverageTest extends \Codeception\TestCase\Test
     }
 
     // tests
-    public function testCola()
+    public function testBeverage()
     {
         $I = $this->codeGuy;
 
@@ -26,6 +26,16 @@ class BeverageTest extends \Codeception\TestCase\Test
         $cola = new Cola();
         $this->assertEquals("コーラ", $cola->getName());
         $this->assertEquals(120, $cola->getPrice());
+
+        $I->expect("レッドブルは200円");
+        $redBull = new RedBull();
+        $this->assertEquals("レッドブル", $redBull->getName());
+        $this->assertEquals(200, $redBull->getPrice());
+
+        $I->expect("おいしい水は100円");
+        $water = new Water();
+        $this->assertEquals("おいしい水", $water->getName());
+        $this->assertEquals(100, $water->getPrice());
     }
 
 }

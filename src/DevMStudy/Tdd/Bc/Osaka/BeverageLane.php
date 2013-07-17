@@ -41,4 +41,14 @@ class BeverageLane extends \SplQueue
     {
         return $this->beveragePrice;
     }
+
+    /**
+     * 引数で渡された金額と在庫の点で、このレーンに格納している飲み物を購入できるか判定します。
+     * @param $amount
+     * @return bool
+     */
+    public function canPurchase($amount)
+    {
+        return $this->beveragePrice <= $amount && 0 < count($this);
+    }
 }
