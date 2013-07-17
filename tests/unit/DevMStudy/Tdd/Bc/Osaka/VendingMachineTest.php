@@ -4,9 +4,9 @@ use Codeception\Util\Stub;
 
 class VendingMachineTest extends \Codeception\TestCase\Test
 {
-   /**
-    * @var \CodeGuy
-    */
+    /**
+     * @var \CodeGuy
+     */
     protected $codeGuy;
 
     protected function _before()
@@ -48,38 +48,34 @@ class VendingMachineTest extends \Codeception\TestCase\Test
         $V->insertMoney(new Money(10));
         $this->assertEquals(1690, $V->getTotalMoneyAmount());
 
+        $insertMoney = function($amount) use ($V) {
+            return function() use ($V, $amount) {
+                $V->insertMoney(new Money($amount));
+            };
+        };
+
         $I->expect("1円玉が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
-        $change = $I->getOutputString(function() use ($V) {
-            $V->insertMoney(new Money(1));
-        });
+        $change = $I->getOutputString($insertMoney(1));
         $this->assertEquals("釣り: 1円", $change->__toString());
         $this->assertEquals(1690, $V->getTotalMoneyAmount());
 
         $I->expect("5円玉が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
-        $change = $I->getOutputString(function() use ($V) {
-            $V->insertMoney(new Money(5));
-        });
+        $change = $I->getOutputString($insertMoney(5));
         $this->assertEquals("釣り: 5円", $change->__toString());
         $this->assertEquals(1690, $V->getTotalMoneyAmount());
 
         $I->expect("2000円札が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
-        $change = $I->getOutputString(function() use ($V) {
-            $V->insertMoney(new Money(2000));
-        });
+        $change = $I->getOutputString($insertMoney(2000));
         $this->assertEquals("釣り: 2000円", $change->__toString());
         $this->assertEquals(1690, $V->getTotalMoneyAmount());
 
         $I->expect("5000円札が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
-        $change = $I->getOutputString(function() use ($V) {
-            $V->insertMoney(new Money(5000));
-        });
+        $change = $I->getOutputString($insertMoney(5000));
         $this->assertEquals("釣り: 5000円", $change->__toString());
         $this->assertEquals(1690, $V->getTotalMoneyAmount());
 
         $I->expect("10000円札が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
-        $change = $I->getOutputString(function() use ($V) {
-            $V->insertMoney(new Money(10000));
-        });
+        $change = $I->getOutputString($insertMoney(10000));
         $this->assertEquals("釣り: 10000円", $change->__toString());
         $this->assertEquals(1690, $V->getTotalMoneyAmount());
     }
@@ -102,11 +98,59 @@ class VendingMachineTest extends \Codeception\TestCase\Test
         $I = $this->codeGuy;
         $V = new VendingMachine();
 
+        $payBack = function() use ($V) {
+            $V->payBack();
+        };
+
         $I->expect("払い戻し操作を行うと、投入金額の総計を釣り銭として出力する。");
         $V->insertMoney(new Money(100));
-        $change = $I->getOutputString(function() use ($V) {
-            $V->payBack();
-        });
+        $change = $I->getOutputString($payBack);
         $this->assertEquals("釣り: 100円", $change->__toString());
+
+        $I->expect("購入後に払い戻し操作を行うと、投入金額の総計から購入代金を引いた金額を釣り銭として出力する。");
+        $V->insertMoney(new Money(1000));
+        $V->purchase();
+        $change = $I->getOutputString($payBack);
+        $this->assertEquals("釣り: 880円", $change->__toString());
+    }
+
+    public function testPurchase()
+    {
+        $I = $this->codeGuy;
+        $V = new VendingMachine();
+
+        $I->expect("投入金額が不足している場合、購入操作を行っても何もしない");
+        $beverage = $V->purchase();
+        $this->assertNull($beverage);
+
+        $I->expect("購入操作を行うと、飲み物の在庫を減らし、売り上げ金額を増やす。");
+        $V->insertMoney(new Money(1000));
+        $beverage = $V->purchase();
+        $stock = $V->getBeverageStock();
+
+        $this->assertEquals("DevMStudy\\Tdd\\Bc\\Osaka\\Cola", get_class($beverage));
+        $this->assertEquals(4, $stock->getQuantity());
+        $this->assertEquals(120, $V->getSales());
+        $this->assertEquals(880, $V->getTotalMoneyAmount());
+    }
+
+    public function testCanPurchase()
+    {
+        $I = $this->codeGuy;
+        $V = new VendingMachine();
+
+        $I->expect("投入金額が不足している場合、飲み物を購入できない。");
+        $V->insertMoney(new Money(10));
+        $this->assertFalse($V->canPurchase());
+
+        $I->expect("投入金額が足りている＆在庫がある場合、飲み物を購入できる。");
+        $V->insertMoney(new Money(1000));
+        $this->assertTrue($V->canPurchase());
+
+        $I->expect("投入金額が足りている＆在庫がない場合、飲み物を購入できる。");
+        for ($i = 0; $i < 5; $i++) {
+            $V->purchase();
+        }
+        $this->assertFalse($V->canPurchase());
     }
 }
