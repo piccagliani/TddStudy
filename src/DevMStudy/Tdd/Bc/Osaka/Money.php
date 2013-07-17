@@ -1,7 +1,11 @@
 <?php
-
 namespace DevMStudy\Tdd\Bc\Osaka;
 
+/**
+ * お金クラス
+ * Class Money
+ * @package DevMStudy\Tdd\Bc\Osaka
+ */
 class Money
 {
     private $amount;

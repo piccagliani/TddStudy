@@ -29,11 +29,48 @@ class VendingMachineTest extends \Codeception\TestCase\Test
         $V->insertMoney(new Money(100));
         $V->insertMoney(new Money(500));
         $V->insertMoney(new Money(1000));
+        $this->assertEquals(1660, $V->getTotalMoneyAmount());
 
         $I->expect("投入は複数回できる。");
         $V->insertMoney(new Money(10));
         $V->insertMoney(new Money(10));
         $V->insertMoney(new Money(10));
+        $this->assertEquals(1690, $V->getTotalMoneyAmount());
+
+        $I->expect("1円玉が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
+        $change = $I->getOutputString(function() use ($V) {
+            $V->insertMoney(new Money(1));
+        });
+        $this->assertEquals("釣り: 1円", $change->__toString());
+        $this->assertEquals(1690, $V->getTotalMoneyAmount());
+
+        $I->expect("5円玉が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
+        $change = $I->getOutputString(function() use ($V) {
+            $V->insertMoney(new Money(5));
+        });
+        $this->assertEquals("釣り: 5円", $change->__toString());
+        $this->assertEquals(1690, $V->getTotalMoneyAmount());
+
+        $I->expect("2000円札が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
+        $change = $I->getOutputString(function() use ($V) {
+            $V->insertMoney(new Money(2000));
+        });
+        $this->assertEquals("釣り: 2000円", $change->__toString());
+        $this->assertEquals(1690, $V->getTotalMoneyAmount());
+
+        $I->expect("5000円札が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
+        $change = $I->getOutputString(function() use ($V) {
+            $V->insertMoney(new Money(5000));
+        });
+        $this->assertEquals("釣り: 5000円", $change->__toString());
+        $this->assertEquals(1690, $V->getTotalMoneyAmount());
+
+        $I->expect("10000円札が投入された場合は、投入金額に加算せず、それをそのまま釣り銭としてユーザに出力する。");
+        $change = $I->getOutputString(function() use ($V) {
+            $V->insertMoney(new Money(10000));
+        });
+        $this->assertEquals("釣り: 10000円", $change->__toString());
+        $this->assertEquals(1690, $V->getTotalMoneyAmount());
     }
 
     public function testGetTotalMoneyAmount()
