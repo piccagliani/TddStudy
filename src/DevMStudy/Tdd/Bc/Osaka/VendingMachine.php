@@ -24,6 +24,11 @@ class VendingMachine
      */
     private $lane = null;
 
+    /**
+     * @var int 売上金額
+     */
+    private $sales = 0;
+
     public function __construct()
     {
         $this->lane = new BeverageLane(Cola::$name, Cola::$price);
@@ -77,6 +82,45 @@ class VendingMachine
             $this->lane->getBeveragePrice(),
             count($this->lane)
         );
+    }
+
+    /**
+     * 投入金額、在庫の点で、飲み物が購入できるかどうかを取得します。
+     * @return bool
+     */
+    public function canPurchase()
+    {
+        if ($this->getTotalMoneyAmount() < $this->lane->getBeveragePrice()) {
+            return false;
+        }
+        if (count($this->lane) === 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 飲み物を購入します。
+     * 投入金額が足りない場合もしくは在庫がない場合、購入操作を行っても何もしません。
+     * @return Beverage
+     */
+    public function purchase()
+    {
+        if ($this->canPurchase() === false) {
+            return NULL;
+        }
+
+        $this->totalMoneyAmount -= $this->lane->getBeveragePrice();
+        $this->sales += $this->lane->getBeveragePrice();
+        return $this->lane->dequeue();
+    }
+
+    /**
+     * 売上金額を取得します。
+     */
+    public function getSales()
+    {
+        return $this->sales;
     }
 
     /**
