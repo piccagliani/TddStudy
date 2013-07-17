@@ -17,7 +17,18 @@ class VendingMachineTest extends \Codeception\TestCase\Test
     {
     }
 
-    // tests
+    public function testConstruct()
+    {
+        $I = $this->codeGuy;
+        $V = new VendingMachine();
+
+        $I->expect("初期状態で、コーラ（値段:120円、名前”コーラ”）を5本格納している。");
+        $stock = $V->getBeverageStock();
+        $this->assertEquals("コーラ", $stock->getName());
+        $this->assertEquals(120, $stock->getPrice());
+        $this->assertEquals(5, $stock->getQuantity());
+    }
+
     public function testInsertMoney()
     {
         $I = $this->codeGuy;

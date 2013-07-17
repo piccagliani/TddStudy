@@ -20,6 +20,19 @@ class VendingMachine
     private $availableMoneyAmount = [10, 50, 100, 500, 1000];
 
     /**
+     * @var BeverageLane 飲み物格納レーン
+     */
+    private $lane = null;
+
+    public function __construct()
+    {
+        $this->lane = new BeverageLane(Cola::$name, Cola::$price);
+        for ($i = 0; $i < 5; $i++) {
+            $this->lane->enqueue(new Cola());
+        }
+    }
+
+    /**
      * 入金します。
      * 想定外のもの（硬貨：１円玉、５円玉。お札：千円札以外のお札）が投入された場合は、
      * 投入金額に加算せず、それをそのまま釣り銭としてユーザに出力します。
@@ -51,6 +64,19 @@ class VendingMachine
     {
         $this->outputChange($this->totalMoneyAmount);
         $this->totalMoneyAmount = 0;
+    }
+
+    /**
+     * 飲み物の情報（値段と名前と在庫）を取得します。
+     * @return BeverageStock
+     */
+    public function getBeverageStock()
+    {
+        return new BeverageStock(
+            $this->lane->getBeverageName(),
+            $this->lane->getBeveragePrice(),
+            count($this->lane)
+        );
     }
 
     /**
