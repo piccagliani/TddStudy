@@ -22,5 +22,20 @@ use Codeception\Module\CodeHelper;
 class CodeGuy extends \Codeception\AbstractGuy
 {
     
+    /**
+     *
+     * @see CodeHelper::getOutputString()
+     * @return \Codeception\Maybe
+     * ! This method is generated. DO NOT EDIT. !
+     * ! Documentation taken from corresponding module !
+     */
+    public function getOutputString($func) {
+        $this->scenario->action('getOutputString', func_get_args());
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
 }
 
