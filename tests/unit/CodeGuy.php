@@ -24,13 +24,13 @@ class CodeGuy extends \Codeception\AbstractGuy
     
     /**
      *
-     * @see CodeHelper::getOutputString()
+     * @see CodeHelper::seeInStandardOutput()
      * @return \Codeception\Maybe
      * ! This method is generated. DO NOT EDIT. !
      * ! Documentation taken from corresponding module !
      */
-    public function getOutputString($func) {
-        $this->scenario->action('getOutputString', func_get_args());
+    public function seeInStandardOutput($expect, $func) {
+        $this->scenario->assertion('seeInStandardOutput', func_get_args());
         if ($this->scenario->running()) {
             $result = $this->scenario->runStep();
             return new Maybe($result);

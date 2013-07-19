@@ -136,15 +136,15 @@ class VendingMachine
     public function purchase($name)
     {
         if ($this->canPurchase($name) === false) {
-            return;
+            return null;
         }
 
         $lane = $this->getLaneFor($name);
         $price = $lane->getBeveragePrice();
-        $lane->dequeue();
         $this->totalMoneyAmount -= $price;
         $this->sales += $price;
         $this->payBack();
+        return $lane->dequeue();
     }
 
     /**
