@@ -128,6 +128,7 @@ class VendingMachine
 
     /**
      * 飲み物を購入します。
+     * 購入操作を行うと、釣り銭（投入金額とジュース値段の差分）を出力します。
      * 投入金額が足りない場合もしくは在庫がない場合、購入操作を行っても何もしません。
      * @param $name
      * @return Beverage
@@ -135,13 +136,15 @@ class VendingMachine
     public function purchase($name)
     {
         if ($this->canPurchase($name) === false) {
-            return null;
+            return;
         }
 
         $lane = $this->getLaneFor($name);
-        $this->totalMoneyAmount -= $lane->getBeveragePrice();
-        $this->sales += $lane->getBeveragePrice();
-        return $lane->dequeue();
+        $price = $lane->getBeveragePrice();
+        $lane->dequeue();
+        $this->totalMoneyAmount -= $price;
+        $this->sales += $price;
+        $this->payBack();
     }
 
     /**

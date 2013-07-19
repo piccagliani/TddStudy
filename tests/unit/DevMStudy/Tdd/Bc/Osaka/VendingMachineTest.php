@@ -118,12 +118,6 @@ class VendingMachineTest extends \Codeception\TestCase\Test
         $V->insertMoney(new Money(100));
         $change = $I->getOutputString($payBack);
         $this->assertEquals("釣り: 100円", $change->__toString());
-
-        $I->expect("購入後に払い戻し操作を行うと、投入金額の総計から購入代金を引いた金額を釣り銭として出力する。");
-        $V->insertMoney(new Money(1000));
-        $V->purchase("コーラ");
-        $change = $I->getOutputString($payBack);
-        $this->assertEquals("釣り: 880円", $change->__toString());
     }
 
     public function testPurchase()
@@ -132,22 +126,29 @@ class VendingMachineTest extends \Codeception\TestCase\Test
         $V = new VendingMachine();
 
         $I->expect("投入金額が不足している場合、購入操作を行っても何もしない");
-        $beverage = $V->purchase("コーラ");
-        $this->assertNull($beverage);
+        $V->purchase("コーラ");
+        $stocks = $V->getBeverageStocks();
+        $this->assertEquals(5, $stocks[0]->getQuantity());
+        $this->assertEquals(0, $V->getSales());
 
         $I->expect("存在しない商品を指定された場合、購入操作を行っても何もしない");
-        $beverage = $V->purchase("ドクターペッパー");
-        $this->assertNull($beverage);
+        $V->purchase("ドクターペッパー");
+        $this->assertEquals(5, $stocks[0]->getQuantity());
+        $this->assertEquals(0, $V->getSales());
 
         $I->expect("購入操作を行うと、飲み物の在庫を減らし、売り上げ金額を増やす。");
         $V->insertMoney(new Money(1000));
-        $beverage = $V->purchase("コーラ");
+        $change = $I->getOutputString(function() use ($V) {
+            $V->purchase("コーラ");
+        });
         $stocks = $V->getBeverageStocks();
 
-        $this->assertEquals("DevMStudy\\Tdd\\Bc\\Osaka\\Cola", get_class($beverage));
         $this->assertEquals(4, $stocks[0]->getQuantity());
         $this->assertEquals(120, $V->getSales());
-        $this->assertEquals(880, $V->getTotalMoneyAmount());
+
+        $I->expect("購入操作を行うと、釣り銭（投入金額とジュース値段の差分）を出力する。");
+        $this->assertEquals(0, $V->getTotalMoneyAmount());
+        $this->assertEquals("釣り: 880円", $change->__toString());
     }
 
     public function testCanPurchase()
