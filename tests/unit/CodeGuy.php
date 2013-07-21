@@ -16,21 +16,45 @@ use Codeception\Module\CodeHelper;
  * @method void expect($prediction)
  * @method void amGoingTo($argumentation)
  * @method void am($role)
- * @method void lookForwardTo($role)
+ * @method void lookForwardTo($achieveValue)
+ * @method void offsetGet($offset)
+ * @method void offsetSet($offset, $value)
+ * @method void offsetExists($offset)
+ * @method void offsetUnset($offset)
 */
 
 class CodeGuy extends \Codeception\AbstractGuy
 {
     
     /**
+     * This method is generated.
+     * Documentation taken from corresponding module.
+     * ----------------------------------------------
      *
-     * @see CodeHelper::seeInStandardOutput()
+     *
+    * Conditional Assertion: Test won't be stopped on fail
+     * @see Codeception\Module\CodeHelper::seeInStandardOutput()
      * @return \Codeception\Maybe
-     * ! This method is generated. DO NOT EDIT. !
-     * ! Documentation taken from corresponding module !
+     */
+    public function canSeeInStandardOutput($expect, $func) {
+        $this->scenario->addStep(new \Codeception\Step\ConditionalAssertion('seeInStandardOutput', func_get_args()));
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+    /**
+     * This method is generated.
+     * Documentation taken from corresponding module.
+     * ----------------------------------------------
+     *
+     *
+     * @see Codeception\Module\CodeHelper::seeInStandardOutput()
+     * @return \Codeception\Maybe
      */
     public function seeInStandardOutput($expect, $func) {
-        $this->scenario->assertion('seeInStandardOutput', func_get_args());
+        $this->scenario->addStep(new \Codeception\Step\Assertion('seeInStandardOutput', func_get_args()));
         if ($this->scenario->running()) {
             $result = $this->scenario->runStep();
             return new Maybe($result);
