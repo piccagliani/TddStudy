@@ -35,15 +35,15 @@ class BattingAverageServiceTest extends \Codeception\TestCase\Test
         $player->setPlateAppearances(749);
         $player->setAtBats(686);
         $player->setHits(213);
-        $this->assertEquals(".310", $this->service->calculateBattingAverage($player));
+        $this->assertEquals(".310", $this->service->calculateBattingAverage($player)->getBattingAverage());
 
         $I->expect("打席数が0の場合は、打率を計算しない");
         $player->setPlateAppearances(0);
-        $this->assertEquals("----", $this->service->calculateBattingAverage($player));
+        $this->assertEquals("----", $this->service->calculateBattingAverage($player)->getBattingAverage());
 
         $I->expect("打席数が0でなく、打数が0の場合は「.000」と計算する");
         $player->setPlateAppearances(749);
         $player->setAtBats(0);
-        $this->assertEquals(".000", $this->service->calculateBattingAverage($player));
+        $this->assertEquals(".000", $this->service->calculateBattingAverage($player)->getBattingAverage());
     }
 }

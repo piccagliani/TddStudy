@@ -23,6 +23,11 @@ class Player
     private $atBats = 0;
 
     /**
+     * @var mixed 打率
+     */
+    private $battingAverage;
+
+    /**
      * @param int $plateAppearances
      */
     public function setPlateAppearances($plateAppearances)
@@ -68,5 +73,21 @@ class Player
     public function getAtBats()
     {
         return $this->atBats;
+    }
+
+    /**
+     * @param mixed $battingAverage
+     */
+    public function setBattingAverage($battingAverage)
+    {
+        $this->battingAverage = $battingAverage;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBattingAverage()
+    {
+        return $this->battingAverage;
     }
 }

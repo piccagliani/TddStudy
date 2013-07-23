@@ -41,7 +41,7 @@ class Basic extends Command
         $player->setHits($h);
 
         $service = new BattingAverageService();
-        $average = $service->calculateBattingAverage($player);
-        $output->writeln("Average: " . $average);
+        $service->calculateBattingAverage($player);
+        $output->writeln("Average: " . $player->getBattingAverage());
     }
 }
