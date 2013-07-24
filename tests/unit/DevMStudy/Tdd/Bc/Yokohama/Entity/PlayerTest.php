@@ -28,6 +28,10 @@ class PlayerTest extends \Codeception\TestCase\Test
     {
         $I = $this->codeGuy;
 
+        $I->expect("getter and setter for \$name works correct");
+        $this->player->setName("Mike");
+        $this->assertEquals("Mike", $this->player->getName());
+
         $I->expect("getter and setter for \$plateAppearances works correct");
         $this->player->setPlateAppearances(10);
         $this->assertEquals(10, $this->player->getPlateAppearances());
@@ -39,5 +43,10 @@ class PlayerTest extends \Codeception\TestCase\Test
         $I->expect("getter and setter for \$atBats works correct");
         $this->player->setAtBats(10);
         $this->assertEquals(10, $this->player->getAtBats());
+
+        $I->expect("getter and setter for \$battingAverage works correct");
+        $this->player->setBattingAverage(".340");
+        $this->assertEquals(".340", $this->player->getBattingAverage());
+
     }
 }

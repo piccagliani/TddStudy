@@ -8,6 +8,11 @@ namespace DevMStudy\Tdd\Bc\Yokohama\Entity;
 class Player
 {
     /**
+     * @var string 選手名
+     */
+    private $name = null;
+
+    /**
      * @var int 打席数
      */
     private $plateAppearances = 0;
@@ -21,6 +26,27 @@ class Player
      * @var int 打数（打席数 - (四死球+犠牲フライ+犠牲バント+打撃妨害+走塁妨害)）
      */
     private $atBats = 0;
+
+    /**
+     * @var mixed 打率
+     */
+    private $battingAverage;
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
     /**
      * @param int $plateAppearances
@@ -68,5 +94,21 @@ class Player
     public function getAtBats()
     {
         return $this->atBats;
+    }
+
+    /**
+     * @param mixed $battingAverage
+     */
+    public function setBattingAverage($battingAverage)
+    {
+        $this->battingAverage = $battingAverage;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBattingAverage()
+    {
+        return $this->battingAverage;
     }
 }
