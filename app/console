@@ -4,4 +4,5 @@ require_once __DIR__ . "/../vendor/autoload.php";
 $application = new \Symfony\Component\Console\Application();
 $application->add(new \DevMStudy\Tdd\FizzBuzz\ConsoleCommand());
 $application->add(new \DevMStudy\Tdd\Bc\Yokohama\Console\Basic());
+$application->add(new \DevMStudy\Tdd\Bc\Yokohama\Console\File());
 $application->run();

@@ -8,6 +8,11 @@ namespace DevMStudy\Tdd\Bc\Yokohama\Entity;
 class Player
 {
     /**
+     * @var string 選手名
+     */
+    private $name = null;
+
+    /**
      * @var int 打席数
      */
     private $plateAppearances = 0;
@@ -26,6 +31,22 @@ class Player
      * @var mixed 打率
      */
     private $battingAverage;
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
     /**
      * @param int $plateAppearances

@@ -16,10 +16,10 @@ class BattingAverageService
      */
     public function calculateBattingAverage(Player $player)
     {
-        if ($player->getPlateAppearances() === 0) {
+        if ($player->getPlateAppearances() == 0) {
             // 打席数が0の場合は、打率を計算しない
             $player->setBattingAverage('----');
-        } else if ($player->getAtBats() === 0) {
+        } else if ($player->getAtBats() == 0) {
             // 打席数が0でなく、打数が0の場合は「0.000」と計算する
             $player->setBattingAverage(".000");
         } else {
@@ -28,5 +28,36 @@ class BattingAverageService
         }
 
         return $player;
+    }
+
+    public function makeBattingAverageRankingFromTsv($filename)
+    {
+        $players = [];
+        $fp = fopen($filename, "r");
+        while (($data = fgetcsv($fp, 0, "\t")) !== false) {
+            $player = new Player();
+            $player->setName($data[0]);
+            $player->setPlateAppearances($data[1]);
+            $player->setAtBats($data[2]);
+            $player->setHits($data[3]);
+            $players[] = $this->calculateBattingAverage($player);
+        }
+        fclose($fp);
+
+        usort($players, function($a, $b) {
+            if ($b->getBattingAverage() === $a->getBattingAverage()) {
+                return 0;
+            }
+            if ($a->getBattingAverage() === '----') {
+                return 1;
+            }
+            if ($b->getBattingAverage() === '----') {
+                return -1;
+            }
+
+            return ($b->getBattingAverage() * 1000) - ($a->getBattingAverage() * 1000);
+        });
+
+        return $players;
     }
 }
